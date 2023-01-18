@@ -1,0 +1,24 @@
+kalibracja przeplywomierza
+kalibracja pompy
+kalibracja zaworu w relacji czas - stopien otwarcia
+
+watki - dla pompy i zaworu
+
+
+
+*NOTES*
+Pompa - w stanie wysokiej impedancji stanem domyslnym jest wysoki - przelutowac rezystor
+podciagajacy na obnizajacy
+Zawor - przez jego dziwna budowe klika w stanie zamkniecia (otworzyc i naprawic, ale czy warto?)
+
+
+
+
+
+
+*DONE*
+
+projekt i lutowanie ukladu taki jaki jest
+przetwarzanie napiecia dla pompy
+sterowanie pompa
+ustawienie pinu pompy
