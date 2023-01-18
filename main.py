@@ -13,15 +13,19 @@ def setupObjectAsInput(instanceSent):
     GPIO.setup(instanceSent.pinNumber, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
     flowmeterState = GPIO.input(instanceSent.pinNumber) # interpreter crashes without this line
     
-
-def main():
-    print("main()")
+def initialize_liquids():
     flowmeter = Flowmeter(project_variables.FLOWMETER_PIN)
     valve = Valve(project_variables.VALVE_PIN_CLOSE)
     pump = Pump(project_variables.PUMP_PIN)
-    
     setupObjectAsInput(flowmeter)
+    return valve
     
+    
+def main():
+    
+    initialize_liquids()
+    print("main()")
+        
     try:
         #pump.pumpIsActivated.off()      # niezbedne do czasu przelutowania ukladu
         #time.sleep(5.0)
