@@ -6,6 +6,7 @@ from valve import Valve
 from flowmeter import Flowmeter
 
 import project_variables
+
 # Class Valve includes few sleeps - may interrupt meausrment
 # Class pump requires improvment - no sleeps 
 def setupObjectAsInput(instanceSent):
@@ -23,16 +24,14 @@ def main():
     setupObjectAsInput(flowmeter)
     
     try:
-        #pump.pumpIsActivated.off()      # niezbedne do czasu przelutowania ukladu
-        #time.sleep(5.0)
+        print("Before pump")
         pump.pourLiquidInMl(45)      #this has to be before flowmeter, otherwise there is no concurrency
+        print("After pump")
         flowmeter.pourLiquidInMl(valve, 45)
-        #time.sleep(20.0)
-    
+        
     
     finally:
         #pump.pumpThread.join()
-        
         print(threading.enumerate())
   
         

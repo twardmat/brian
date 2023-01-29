@@ -18,20 +18,20 @@ class Pump:
         
         
         
-    def pumpVolumeInMl(self, volume):
+#    def pumpVolumeInMl(self, volume):
+#        calibrationConstant = 30
+##        activationTime = setVolume/calibrationConstant
+#        self.activatePumpForTimeInMs(activationTime)
+#        self.pumpThread = threading.Thread(target=self.activatePumpForTimeInMs, args=(activationTime,))
+#        self.pumpThread.start()
+        
+    def pourLiquidInMl(self, setVolume):
         calibrationConstant = 30
         activationTime = setVolume/calibrationConstant
         self.activatePumpForTimeInMs(activationTime)
         #self.pumpThread = threading.Thread(target=self.activatePumpForTimeInMs, args=(activationTime,))
         #self.pumpThread.start()
-        
-    def pourLiquidInMl(self, setVolume):
-        calibrationConstant = 30
-        activationTime = setVolume/calibrationConstant
-        #self.activatePumpForTimeInMs(activationTime)
-        self.pumpThread = threading.Thread(target=self.activatePumpForTimeInMs, args=(activationTime,))
-        self.pumpThread.start()
-        print(self.pumpThread.is_alive())
+        #print(self.pumpThread.is_alive())
 
 
 

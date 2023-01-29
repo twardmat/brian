@@ -24,7 +24,7 @@ class Valve:
     def booleanOpenValve(self, isBeingOpened):
         if ((isBeingOpened == True) and (self.isThreadActive == 0)):
             self.isThreadActive = 1
-            defaultOpeningTime = 40.0
+            defaultOpeningTime = 30.0
             self.valveThread = threading.Thread(target=self.openForTime, args=(defaultOpeningTime,))
             self.valveThread.start()
             print("The thread is alive %s \n", self.valveThread.is_alive())

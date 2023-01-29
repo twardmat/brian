@@ -4,57 +4,36 @@ import threading
 from project_variables import PUMP_PIN
 
 class Pump:
+    # check volatile types for access to variable from different threads
+    isRunning = False
     
     def __init__(self, pumpPin):
         self.pumpIsActivated = DigitalOutputDevice(pumpPin) 
         
     
-    def activatePumpForTimeInMs(self, activationTime):
+    def _activate_pump_for_time_in_s(self, activationTime):
         self.pumpIsActivated.on()
         print("pump on")
         time.sleep(activationTime)
         self.pumpIsActivated.off()
         print("pump off")
         
-        
-        
-    def pumpVolumeInMl(self, volume):
+                
+    def pumpVolumeInMl(self, setVolume):
+        self.isRunning = True
         calibrationConstant = 30
         activationTime = setVolume/calibrationConstant
-        self.activatePumpForTimeInMs(activationTime)
-        #self.pumpThread = threading.Thread(target=self.activatePumpForTimeInMs, args=(activationTime,))
-        #self.pumpThread.start()
+        self._activate_pump_for_time_in_s(activationTime)
+        self.isRunning = False
         
-    def pourLiquidInMl(self, setVolume):
-        calibrationConstant = 30
-        activationTime = setVolume/calibrationConstant
-        #self.activatePumpForTimeInMs(activationTime)
-        self.pumpThread = threading.Thread(target=self.activatePumpForTimeInMs, args=(activationTime,))
-        self.pumpThread.start()
-        print(self.pumpThread.is_alive())
 
 
 
 
-
+# this main is for pump testing purposes only
 def main():
     pump = Pump(PUMP_PIN)
-    pump.pumpIsActivated.off()
-    time.sleep(3.0)
-    pump.activatePumpForTimeInMs(2.0)
-    time.sleep(3.0)
-    
-    
-    # high impedance logic debug
-    #pumpOn = DigitalOutputDevice(PUMP_PIN)
-    #print("on")
-    #pumpOn.on() 
-    #time.sleep(10)
-    #print("off")
-    #pumpOn.off()
-    #time.sleep(10)
-    
-
+    pump._activate_pump_for_time_in_s(10.0)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 #from gpiozero import DigitalOutputDevice
-import time
+import time as systime
 import RPi.GPIO as GPIO
 from project_variables import FLOWMETER_PIN
 # pin number may be initialised incorrectly
@@ -19,7 +19,7 @@ class Flowmeter(object):
         self.totalVolume = 0
         self._circleBuffer = [None for i in range(10)]
         self.previousMeasurementTime = None
-        self.lastTime = time.monotonic_ns()
+        self.lastTime = systime.monotonic_ns()
      
     def _addToBuffer(self, value):
         self._circleBuffer.pop(0)
@@ -61,20 +61,31 @@ class Flowmeter(object):
             GPIO.add_event_detect(self.pinNumber, GPIO.RISING)
             self._reset()
             print(setVolume/2)
+            time = 0
+            lastTime = systime.monotonic_ns()
             while True:
                 if (self.totalVolume)< setVolume/2:
                     currentValve.booleanOpenValve(True)
                 else:
                     currentValve.booleanOpenValve(False)
+                    print("should be closing")
                 
                 if GPIO.event_detected(self.pinNumber):
                     self._measurePeriod()
                     self.calculateTotalVolumeInMl()
                     
-                if((self.lastTime + 1e9) < time.monotonic_ns()):
-                    print(self.lastTime/1e9)
-                    self.lastTime = time.monotonic_ns()
+                if((self.lastTime + 1e9) < systime.monotonic_ns()):
+                    #print(self.lastTime/1e9)
+                    self.lastTime = systime.monotonic_ns()
                     self.printObjectVariables()
+                if((lastTime + 1e9) < systime.monotonic_ns()):
+                    lastTime = systime.monotonic_ns()
+                    print(f"Frequency is equal to {self.calculateFrequency()}")
+                    print(f"Flow time is {self.calculatePeriodMedianInSeconds()}")
+                    print(f"Total volume {self.totalVolume}")
+                    time = time + 1;
+                if time > 30:
+                    break
         finally:
             print("Finally")
             GPIO.remove_event_detect(self.pinNumber)
@@ -101,7 +112,6 @@ def main():
     try:
         flowmeter = Flowmeter(FLOWMETER_PIN)
         GPIO.add_event_detect(FLOWMETER_PIN, GPIO.RISING)
-        lastTime = time.monotonic_ns()
         totalVolume = 0
         while True:
             # time.sleep(1)
@@ -109,11 +119,7 @@ def main():
                 flowmeter._measurePeriod()
                 totalVolume = flowmeter.calculateTotalVolumeInMl()
                 
-            if((lastTime + 1e9) < time.monotonic_ns()):
-                lastTime = time.monotonic_ns()
-                print(f"Frequency is equal to {flowmeter.calculateFrequency()}")
-                print(f"Flow time is {flowmeter.calculatePeriodMedianInSeconds()}")
-                print(f"Total volume {totalVolume}")
+
     finally:
         print("Finally")
         GPIO.remove_event_detect(FLOWMETER_PIN)
