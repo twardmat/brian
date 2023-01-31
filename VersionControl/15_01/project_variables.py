@@ -1,6 +1,0 @@
-FLOWMETER_PIN = 20
-
-VALVE_PIN_OPEN = 2
-VALVE_PIN_CLOSE = 4
-
-PUMP_PIN = 17 # to be changed
