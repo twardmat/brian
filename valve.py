@@ -2,8 +2,6 @@ from gpiozero import DigitalOutputDevice
 import time
 import threading
 
-
-# trzeba wykorzystac watki
 class Valve:
     
     def __init__(self, closePin=2):
@@ -21,19 +19,23 @@ class Valve:
         openTime = openTime/2
         self.openValve(openTime)
         
+    # Public method
     def booleanOpenValve(self, isBeingOpened):
         if ((isBeingOpened == True) and (self.isThreadActive == 0)):
             self.isThreadActive = 1
-            defaultOpeningTime = 40.0
+            defaultOpeningTime = 10.0
             self.valveThread = threading.Thread(target=self.openForTime, args=(defaultOpeningTime,))
             self.valveThread.start()
             print("The thread is alive %s \n", self.valveThread.is_alive())
         elif (isBeingOpened == False):
-            self.valveClose.on()                   #czy to jest ladne ze zamykam zawor w innnym miejscu niz w funkcji openValve? (potrzebuje przerwac proces nalewania)
+            self.valveClose.on()
 
+
+
+# this main is for valve testing purposes only  
 def main():
     valve = Valve()
-    valve.openForTime(3.0)
+    valve.openForTime(10.0)
     time.sleep(2.0)
   
 

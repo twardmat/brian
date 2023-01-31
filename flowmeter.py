@@ -20,6 +20,8 @@ class Flowmeter(object):
         self._circleBuffer = [None for i in range(10)]
         self.previousMeasurementTime = None
         self.lastTime = time.monotonic_ns()
+        self.time_since_activated = 0
+        self.timeout = 20
      
     def _addToBuffer(self, value):
         self._circleBuffer.pop(0)
@@ -56,11 +58,21 @@ class Flowmeter(object):
             self.totalVolume += secondsInMinute/flowmeterConstant 
         return self.totalVolume*mlInLiter
     
+    
+            
+    def printObjectVariables(self):
+        if((self.lastTime + 1e9) < time.monotonic_ns()):
+            self.lastTime = time.monotonic_ns()
+            print(f"Frequency is equal to {self.calculateFrequency()}")
+            print(f"Flow time is {self.calculatePeriodMedianInSeconds()}")
+            print(f"Total volume {self.totalVolume}")
+            self.time_since_activated += 1
+        
     def pourLiquidInMl(self, currentValve, setVolume):
         try:
             GPIO.add_event_detect(self.pinNumber, GPIO.RISING)
             self._reset()
-            print(setVolume/2)
+            print(setVolume, "ml")
             while True:
                 if (self.totalVolume)< setVolume/2:
                     currentValve.booleanOpenValve(True)
@@ -71,27 +83,23 @@ class Flowmeter(object):
                     self._measurePeriod()
                     self.calculateTotalVolumeInMl()
                     
-                if((self.lastTime + 1e9) < time.monotonic_ns()):
-                    print(self.lastTime/1e9)
-                    self.lastTime = time.monotonic_ns()
-                    self.printObjectVariables()
+                self.printObjectVariables()
+                
+                if self.time_since_activated > self.timeout:
+                    print("timeout 20s")
+                    break;
         finally:
             print("Finally")
             GPIO.remove_event_detect(self.pinNumber)
             if(currentValve.isThreadActive == 1):         # check is_alive() method
                 currentValve.valveThread.join()
-            
-    def printObjectVariables(self):
-        print(f"Frequency is equal to {self.calculateFrequency()}")
-        print(f"Flow time is {self.calculatePeriodMedianInSeconds()}")
-        print(f"Total volume {self.totalVolume}")
-        
         
 
 
-# interrupt
-# GPIO.add_event_detect(FLOWMETER_PIN, GPIO.RISING, pulseWidthMeasurement)
-# callback was adding times to the buffer and every 1 second the median was calculated
+
+
+
+# this main is only for flowmeter testing purposes
 
 def main():
     print("main()")
@@ -104,7 +112,6 @@ def main():
         lastTime = time.monotonic_ns()
         totalVolume = 0
         while True:
-            # time.sleep(1)
             if GPIO.event_detected(FLOWMETER_PIN):
                 flowmeter._measurePeriod()
                 totalVolume = flowmeter.calculateTotalVolumeInMl()
